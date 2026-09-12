@@ -304,7 +304,6 @@
         </div>
 
         <div class="content">
-            <!-- 입력 섹션 -->
             <div class="section">
                 <div class="section-title">구매 정보</div>
 
@@ -374,7 +373,6 @@
                 </div>
             </div>
 
-            <!-- 결과 섹션 -->
             <div class="section">
                 <div class="section-title">계산 결과</div>
 
@@ -402,23 +400,20 @@
             const salePrice = parseFloat(document.getElementById('salePrice').value);
             const fee = parseFloat(document.getElementById('fee').value) || 0;
 
-            // 입력값 검증
             if (!jpyPrice || !exchangeRate || !salePrice || jpyPrice < 0 || exchangeRate < 0 || salePrice < 0 || quantity < 1) {
                 alert('필수 항목을 올바르게 입력해주세요.');
                 return;
             }
 
-            // 계산
-            const totalJpyPrice = jpyPrice * quantity; // 수량을 포함한 총 엔화 원가
-            const krwCostPerUnit = jpyPrice * exchangeRate; // 단품 원가 (원화)
-            const krwCostTotal = totalJpyPrice * exchangeRate; // 총 원가 (원화)
-            const krwJpyShipping = jpyShipping * exchangeRate; // 일본 배송비를 원화로 변환
-            const totalCost = krwCostTotal + krwJpyShipping + krwShipping + fee; // 총 비용
-            const totalSalePrice = salePrice * quantity; // 총 판매가
-            const margin = totalSalePrice - totalCost; // 마진
-            const marginRate = (margin / totalSalePrice) * 100; // 마진률
+            const totalJpyPrice = jpyPrice * quantity;
+            const krwCostPerUnit = jpyPrice * exchangeRate;
+            const krwCostTotal = totalJpyPrice * exchangeRate;
+            const krwJpyShipping = jpyShipping * exchangeRate;
+            const totalCost = krwCostTotal + krwJpyShipping + krwShipping + fee;
+            const totalSalePrice = salePrice * quantity;
+            const margin = totalSalePrice - totalCost;
+            const marginRate = (margin / totalSalePrice) * 100;
 
-            // 결과 표시
             displayResults(jpyPrice, krwCostPerUnit, krwCostTotal, krwJpyShipping, krwShipping, fee, totalCost, margin, marginRate, quantity, salePrice, totalSalePrice);
         }
 
@@ -431,7 +426,7 @@
             const marginSign = margin >= 0 ? '+' : '-';
             const marginRateSign = marginRate >= 0 ? '+' : '-';
 
-            const marginPerUnit = margin / quantity; // 단품당 마진
+            const marginPerUnit = margin / quantity;
 
             resultContainer.innerHTML = `
                 <div class="result-card margin active">
@@ -505,7 +500,6 @@
             `;
         }
 
-        // 엔터 키로도 계산 가능
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 calculateMargin();
