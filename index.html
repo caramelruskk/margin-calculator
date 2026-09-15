@@ -405,23 +405,21 @@
 
             const krwCostPerUnit = jpyPrice * exchangeRate;
             const krwJpyShippingPerUnit = jpyShipping * exchangeRate;
-            const costPerUnit = krwCostPerUnit + krwJpyShippingPerUnit;
-            const totalCostBefore = costPerUnit * quantity;
             
-            const feePerUnit = salePrice * (feePercent / 100);
-            const totalFee = feePerUnit * quantity;
-            const totalCost = totalCostBefore + totalFee;
+            const totalJpyCost = (krwCostPerUnit * quantity) + krwJpyShippingPerUnit;
             
-            const revenuePerUnit = salePrice + krwShipping;
-            const totalRevenue = revenuePerUnit * quantity;
+            const feeAmount = salePrice * (feePercent / 100);
+            const totalKrwCost = totalJpyCost + feeAmount;
             
-            const margin = totalRevenue - totalCost;
+            const totalRevenue = salePrice + krwShipping;
+            
+            const margin = totalRevenue - totalKrwCost;
             const marginRate = (margin / totalRevenue) * 100;
 
-            displayResults(jpyPrice, krwCostPerUnit, krwJpyShippingPerUnit, costPerUnit, totalCostBefore, feePerUnit, totalFee, totalCost, salePrice, krwShipping, revenuePerUnit, totalRevenue, margin, marginRate, quantity, feePercent);
+            displayResults(jpyPrice, krwCostPerUnit, krwJpyShippingPerUnit, totalJpyCost, feeAmount, totalKrwCost, salePrice, krwShipping, totalRevenue, margin, marginRate, quantity, feePercent);
         }
 
-        function displayResults(jpyPrice, krwCostPerUnit, krwJpyShippingPerUnit, costPerUnit, totalCostBefore, feePerUnit, totalFee, totalCost, salePrice, krwShipping, revenuePerUnit, totalRevenue, margin, marginRate, quantity, feePercent) {
+        function displayResults(jpyPrice, krwCostPerUnit, krwJpyShippingPerUnit, totalJpyCost, feeAmount, totalKrwCost, salePrice, krwShipping, totalRevenue, margin, marginRate, quantity, feePercent) {
             const resultContainer = document.getElementById('resultContainer');
             
             const marginClass = margin >= 0 ? 'positive' : 'negative';
@@ -434,7 +432,7 @@
 
             resultContainer.innerHTML = `
                 <div class="result-card margin active">
-                    <div class="result-label">총 마진 (₩)</div>
+                    <div class="result-label">마진 (₩)</div>
                     <div class="result-value ${marginClass}">
                         ${marginSign}${Math.abs(margin).toLocaleString('ko-KR', {maximumFractionDigits: 0})}
                     </div>
@@ -455,35 +453,35 @@
 
                 <div class="result-card cost">
                     <div class="result-label">비용 분석</div>
-                    <div class="result-value">${totalCost.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</div>
+                    <div class="result-value">${totalKrwCost.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</div>
                     <div class="breakdown">
                         <div class="breakdown-item">
                             <span>단품 원가 (₩)</span>
                             <span>${krwCostPerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                         <div class="breakdown-item">
-                            <span>단품 일본배송비 (환전)</span>
-                            <span>${krwJpyShippingPerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
+                            <span>수량</span>
+                            <span>× ${quantity}개</span>
                         </div>
                         <div class="breakdown-item">
-                            <span>단품 원가비용</span>
-                            <span>${costPerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
+                            <span>= 원가 소계</span>
+                            <span>${(krwCostPerUnit * quantity).toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                         <div class="breakdown-item">
-                            <span>수량별 원가비용</span>
-                            <span>${totalCostBefore.toLocaleString('ko-KR', {maximumFractionDigits: 0})} (${costPerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})} × ${quantity})</span>
+                            <span>일본 배송비 (환전)</span>
+                            <span>+${krwJpyShippingPerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                         <div class="breakdown-item">
-                            <span>단품 수수료 (${feePercent.toFixed(1)}%)</span>
-                            <span>${feePerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
+                            <span>일본 총 비용</span>
+                            <span>${totalJpyCost.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                         <div class="breakdown-item" style="border-top: 1px solid #f0f0f0; padding-top: 8px; margin-top: 8px;">
-                            <span>총 수수료</span>
-                            <span>${totalFee.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
+                            <span>수수료 (${feePercent.toFixed(1)}%)</span>
+                            <span>+${feeAmount.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                         <div class="breakdown-item" style="border-top: 1px solid #f0f0f0; padding-top: 8px; margin-top: 8px; font-weight: 600;">
                             <span>총 비용</span>
-                            <span>${totalCost.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
+                            <span>${totalKrwCost.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                     </div>
                 </div>
@@ -493,20 +491,16 @@
                     <div class="result-value">${totalRevenue.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</div>
                     <div class="breakdown">
                         <div class="breakdown-item">
-                            <span>단품 판매가</span>
+                            <span>판매가 (고정)</span>
                             <span>${salePrice.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                         <div class="breakdown-item">
-                            <span>한국 배송비 (수익)</span>
+                            <span>한국 배송비 (고정)</span>
                             <span>+${krwShipping.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
-                        <div class="breakdown-item">
-                            <span>단품 수익</span>
-                            <span>${revenuePerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
-                        </div>
                         <div class="breakdown-item" style="border-top: 1px solid #f0f0f0; padding-top: 8px; margin-top: 8px; font-weight: 600;">
-                            <span>총 수익</span>
-                            <span>${totalRevenue.toLocaleString('ko-KR', {maximumFractionDigits: 0})} (${revenuePerUnit.toLocaleString('ko-KR', {maximumFractionDigits: 0})} × ${quantity})</span>
+                            <span>수익 (고정)</span>
+                            <span>${totalRevenue.toLocaleString('ko-KR', {maximumFractionDigits: 0})}</span>
                         </div>
                     </div>
                 </div>
